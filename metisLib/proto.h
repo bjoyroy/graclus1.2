@@ -37,6 +37,7 @@ void PruneGraph(CtrlType *, GraphType *, int, idxtype *, idxtype *, idxtype *, f
 /* debug.c */
 int ComputeCut(GraphType *, idxtype *);
 float ComputeRAsso(GraphType *graph, idxtype *where, int npart);
+float ComputeRCut(GraphType *graph, idxtype *where, int npart);
 float ComputeNCut(GraphType *, idxtype *, int);
 int CheckBnd(GraphType *);
 int CheckBnd2(GraphType *);
