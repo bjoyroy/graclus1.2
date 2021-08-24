@@ -59,6 +59,8 @@ main(int argc, char *argv[])
 	    cutType = NCUT;
 	  else if(strcmp(*argv, "rassoc") == 0)
 	    cutType = RASSO;
+    else if(strcmp(*argv, "rcut") == 0)
+      cutType = RCUT;    
 	  else{
 	    printf("Invalid option %s\n", *argv);
 	    print_help(program_name);
@@ -189,13 +191,17 @@ main(int argc, char *argv[])
   stoptimer(METISTmr);
   ComputePartitionBalance(&graph, nparts, part, lbvec);
  
+  // part == partition array
   if (cutType == NCUT){
     result = ComputeNCut(&graph, part, nparts);
     printf("\nNormalized-Cut... \n   Cut value: %7f, Balance: ", result);
   }
-  else{
+  else if (cutType == RASSO){
     result = ComputeRAsso(&graph, part, nparts);
     printf("\nRatio Association...  \n  Association value: %7f, Balance: ", result);
+  } else {
+    result = ComputeRCut(&graph, part, nparts);
+    printf("\nRatio Cut...  \n  Cut value: %7f, Balance: ", result);
   }
     
   //printf("  %d-way Edge-Cut: %7d\n", nparts, ComputeCut(&graph, part));

@@ -61,7 +61,7 @@ void transform_matrix(CtrlType *ctrl, GraphType *graph, idxtype *w, float *m_adj
 	for (j=xadj[i]; j<xadj[i+1]; j++)
 	  m_adjwgt[j] = adjwgt[j];
   }
-  else{ //normalize rows and columns
+  else if (cutType == NCUT){ //normalize rows and columns
     if (adjwgt == NULL){ 
       for (i=0; i<nvtxs; i++)
 	for (j=xadj[i]; j<xadj[i+1]; j++) 
@@ -84,6 +84,10 @@ void transform_matrix(CtrlType *ctrl, GraphType *graph, idxtype *w, float *m_adj
 	  if (w[i]>0)
 	    m_adjwgt[j] /= w[adjncy[j]];
     }  
+  } else {
+      printf("Invalid option: cutType in transform_matrix - wkkm");
+      //print_help(program_name);
+      exit(0);
   }
 }
 
@@ -108,7 +112,7 @@ void transform_matrix_half(CtrlType *ctrl, GraphType *graph, idxtype *w, float *
 	for (j=xadj[i]; j<xadj[i+1]; j++)
 	  m_adjwgt[j] = adjwgt[j];
   }
-  else{ //normalize rows and columns
+  else if(cutType == NCUT){ //normalize rows and columns
     if (adjwgt == NULL){ 
       for (i=0; i<nvtxs; i++)
 	for (j=xadj[i]; j<xadj[i+1]; j++) 
@@ -131,6 +135,10 @@ void transform_matrix_half(CtrlType *ctrl, GraphType *graph, idxtype *w, float *
 	  if (w[i]>0)
 	    m_adjwgt[j] /= sqrt(w[adjncy[j]]);
     }  
+  } else {
+      printf("Invalid option: cutType in transform_matrix - wkkm");
+      //print_help(program_name);
+      exit(0);
   }
 }
 

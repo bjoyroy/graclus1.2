@@ -19,6 +19,7 @@
 **************************************************************************/
 float ComputeRAsso(GraphType *graph, idxtype *where, int npart)
 {
+  // where is the partition array pointer
   int i, j, cm, nvtxs;
   idxtype *rasso, *clusterSize, *xadj, *adjncy;
   float result;
@@ -34,20 +35,72 @@ float ComputeRAsso(GraphType *graph, idxtype *where, int npart)
   for (i=0; i<nvtxs; i++)
     clusterSize[where[i]] ++;
   
+  // if unweighted graph (weight 1)
   if (graph->adjwgt == NULL) {
     for (i=0; i<nvtxs; i++) {
       cm = where[i];
       for (j=xadj[i]; j<xadj[i+1]; j++)
-	if (cm == where[adjncy[j]])
-	  rasso[where[adjncy[j]]] ++;
+	       if (cm == where[adjncy[j]])
+	         rasso[where[adjncy[j]]] ++;
     }
   }
   else {
     for (i=0; i<nvtxs; i++){
-      cm = where[i];
+      cm = where[i]; // in which partition
       for (j=xadj[i]; j<xadj[i+1]; j++)
 	if (cm == where[adjncy[j]])
 	  rasso[where[adjncy[j]]] += adjwgt[j];
+    }
+  }
+    
+  result =0;
+  for (i=0; i<npart; i++){
+    if (clusterSize[i] >0)
+      result +=  rasso[i] *1.0/ clusterSize[i];
+  }
+  free(rasso);
+  free(clusterSize);
+  return result;
+}
+
+/*************************************************************************
+* This function computes the ratio cut. given the graph and a where vector
+* added by bjoy on 8/24/2021
+**************************************************************************/
+float ComputeRCut(GraphType *graph, idxtype *where, int npart)
+{
+  // where is the partition array pointer
+  int i, j, cm, nvtxs;
+  idxtype *rasso, *clusterSize, *xadj, *adjncy;
+  float result;
+  idxtype * adjwgt;
+
+
+  rasso = idxsmalloc(npart, 0, "ComputeNCut: ncut"); // field used for rcut
+  clusterSize = idxsmalloc(npart, 0, "ComputeNCut: degree");
+  nvtxs = graph->nvtxs;
+  xadj = graph->xadj;
+  adjncy = graph->adjncy;
+  adjwgt = graph->adjwgt;
+
+  for (i=0; i<nvtxs; i++)
+    clusterSize[where[i]] ++;
+  
+  // if unweighted graph (weight 1)
+  if (graph->adjwgt == NULL) {
+    for (i=0; i<nvtxs; i++) {
+      cm = where[i];
+      for (j=xadj[i]; j<xadj[i+1]; j++)
+         if (cm != where[adjncy[j]]) // changed
+           rasso[cm] ++;
+    }
+  }
+  else {
+    for (i=0; i<nvtxs; i++){
+      cm = where[i]; // in which partition
+      for (j=xadj[i]; j<xadj[i+1]; j++)
+  if (cm != where[adjncy[j]]) // changed
+    rasso[cm] += adjwgt[j];
     }
   }
     

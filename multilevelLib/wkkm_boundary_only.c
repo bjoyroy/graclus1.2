@@ -61,7 +61,7 @@ void transform_matrix(CtrlType *ctrl, GraphType *graph, idxtype *w, float *m_adj
 	for (j=xadj[i]; j<xadj[i+1]; j++)
 	  m_adjwgt[j] = adjwgt[j];
   }
-  else{ //normalize rows and columns
+  else if(cutType == NCUT){ //normalize rows and columns
     if (adjwgt == NULL){ 
       for (i=0; i<nvtxs; i++)
 	for (j=xadj[i]; j<xadj[i+1]; j++) 
@@ -84,6 +84,10 @@ void transform_matrix(CtrlType *ctrl, GraphType *graph, idxtype *w, float *m_adj
 	  if (w[i]>0)
 	    m_adjwgt[j] /= w[adjncy[j]];
     }  
+  } else {
+      printf("Invalid option: cutType in transform_matrix - wkkm_boundary");
+      //print_help(program_name);
+      exit(0);
   }
 }
 
@@ -922,9 +926,11 @@ void MLKKMRefine(CtrlType *ctrl, GraphType *orggraph, GraphType *graph, int npar
       result = ComputeNCut(graph, graph->where, nparts);
       //printf("   %7f", result);
     }
-    else{
+    else if(cutType == RASSO){
       result = ComputeRAsso(graph, graph->where, nparts);
       //printf("   %7f", result);
+    } else {
+      result = ComputeRCut(graph, graph->where, nparts);
     }
     //printf(" (%d)\n\n", graph->nvtxs);
     //ends here*/
